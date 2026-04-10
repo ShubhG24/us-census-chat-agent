@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Status - CensusAI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0f12 0%, #1a1a24 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .brand {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 2rem;
+        }
+        .status-bar {
+            display: flex;
+            gap: 6px;
+            height: 12px;
+            margin-bottom: 2rem;
+            background: var(--bar-bg);
+            border-radius: 100px;
+            padding: 3px;
+        }
+        .segment {
+            flex: 1;
+            border-radius: 100px;
+            transition: background 0.6s ease, box-shadow 0.6s ease;
+        }
+        .segment.ok { background: #22c55e; box-shadow: 0 0 16px rgba(34,197,94,0.4); }
+        .segment.down { background: #ef4444; box-shadow: 0 0 16px rgba(239,68,68,0.4); }
+        .headline {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            transition: color 0.4s ease;
+        }
+        .headline.ok { color: #22c55e; }
+        .headline.degraded { color: #f59e0b; }
+        .headline.down { color: #ef4444; }
+        .subtext {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
+        }
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin-bottom: 1.5rem;
+        }
+        .component {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .component:last-child { border-bottom: none; }
+        .component-info { display: flex; flex-direction: column; gap: 0.25rem; }
+        .component-name { color: #fff; font-weight: 500; font-size: 0.95rem; }
+        .component-desc { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+        .component-right { display: flex; align-items: center; gap: 0.75rem; }
+        .latency {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.25);
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            min-width: 42px;
+            text-align: right;
+        }
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+        .pill.ok { background: rgba(34,197,94,0.15); color: #22c55e; }
+        .pill.down { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            transition: background 0.4s ease;
+        }
+        .dot.ok { background: #22c55e; }
+        .dot.down { background: #ef4444; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .footer a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .footer a:hover { color: #fff; }
+        .last-checked {
+            color: rgba(255,255,255,0.25);
+            font-size: 0.75rem;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="brand">CensusAI Status</div>
+        <div class="status-bar" id="statusBar"></div>
+        <h1 class="headline" id="headline"></h1>
+        <p class="subtext">Real-time health of all system components.</p>
+        <div class="divider"></div>
+        <div id="components"></div>
+        <div class="footer">
+            <a href="/">&larr; Back to App</a>
+            <span class="last-checked" id="lastChecked"></span>
+        </div>
+    </div>
+
+    <script>
+        var COMPONENTS = [
+            { key: 'api', name: 'API Server', desc: 'Core application server' },
+            { key: 'snowflake', name: 'Snowflake', desc: 'Census database connection' },
+            { key: 'anthropic', name: 'Anthropic', desc: 'LLM for query generation' },
+        ];
+
+        function render(data) {
+            var bar = document.getElementById('statusBar');
+            var headline = document.getElementById('headline');
+            var container = document.getElementById('components');
+            var lastChecked = document.getElementById('lastChecked');
+
+            bar.innerHTML = COMPONENTS.map(function(c) {
+                var ok = data.components[c.key].healthy;
+                return '<div class="segment ' + (ok ? 'ok' : 'down') + '"></div>';
+            }).join('');
+
+            var allOk = data.status === 'healthy';
+            var anyOk = COMPONENTS.some(function(c) { return data.components[c.key].healthy; });
+
+            if (allOk) {
+                headline.textContent = 'All Systems Operational';
+                headline.className = 'headline ok';
+            } else if (anyOk) {
+                headline.textContent = 'Partial Outage';
+                headline.className = 'headline degraded';
+            } else {
+                headline.textContent = 'Service Unavailable';
+                headline.className = 'headline down';
+            }
+
+            container.innerHTML = COMPONENTS.map(function(c) {
+                var info = data.components[c.key];
+                var ok = info.healthy;
+                var cls = ok ? 'ok' : 'down';
+                var label = ok ? 'Operational' : 'Down';
+                var ms = info.response_time_ms;
+                var latencyStr = ms > 0 ? ms + 'ms' : '<1ms';
+                return '<div class="component">' +
+                    '<div class="component-info">' +
+                        '<span class="component-name">' + c.name + '</span>' +
+                        '<span class="component-desc">' + c.desc + '</span>' +
+                    '</div>' +
+                    '<div class="component-right">' +
+                        '<span class="latency">' + latencyStr + '</span>' +
+                        '<div class="pill ' + cls + '">' +
+                            '<span class="dot ' + cls + '"></span>' +
+                            label +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+
+            var t = new Date(data.checked_at);
+            lastChecked.textContent = 'Checked ' + t.toLocaleTimeString();
+        }
+
+        var initial = {{INITIAL_DATA}};
+        render(initial);
+
+        setInterval(function() {
+            fetch('/health', { headers: { 'Accept': 'application/json' } })
+                .then(function(r) { return r.json(); })
+                .then(render)
+                .catch(function() {});
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(99, 102, 241, 0.3);
+  border-radius: 3px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.dark .glass {
+  background: rgba(23, 23, 23, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Typing indicator ─── */
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+.typing-dot {
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ─── Input shimmer (moved from inline style in InputBar) ─── */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* ─── Example question button ─── */
+.example-btn {
+  @apply px-3 py-2 text-sm rounded-xl transition-all duration-200 text-left;
+}
+
+.example-btn:hover {
+  transform: translateX(4px);
+}
+
+/* ─── Markdown content styling ─── */
+.markdown-content {
+  @apply leading-relaxed;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  @apply font-semibold mt-4 mb-2;
+}
+
+.markdown-content h1 {
+  @apply text-xl;
+}
+
+.markdown-content h2 {
+  @apply text-lg;
+}
+
+.markdown-content p {
+  @apply mb-3 leading-relaxed;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  @apply ml-4 mb-3 space-y-1;
+}
+
+.markdown-content li {
+  @apply leading-relaxed;
+}
+
+.markdown-content strong {
+  @apply font-semibold;
+}
+
+.dark .markdown-content strong {
+  @apply text-white;
+}
+
+.markdown-content code:not(.sql-code) {
+  @apply bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.dark .markdown-content code:not(.sql-code) {
+  @apply bg-indigo-900/50 text-indigo-300;
+}
+
+.markdown-content pre:not(.sql-block) {
+  @apply bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto my-3 text-sm;
+}
+
+.markdown-content pre:not(.sql-block) code {
+  @apply bg-transparent text-slate-100 p-0;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse my-3 rounded-lg overflow-hidden;
+}
+
+.markdown-content th,
+.markdown-content td {
+  @apply border border-gray-200 px-4 py-2.5 text-left;
+}
+
+.dark .markdown-content th,
+.dark .markdown-content td {
+  @apply border-slate-700;
+}
+
+.markdown-content th {
+  @apply bg-gradient-to-r from-indigo-50 to-purple-50 font-semibold text-gray-700;
+}
+
+.dark .markdown-content th {
+  @apply from-indigo-900/50 to-purple-900/50 text-gray-200;
+}
+
+.markdown-content tr:hover td {
+  @apply bg-gray-50;
+}
+
+.dark .markdown-content tr:hover td {
+  @apply bg-slate-800/50;
+}
+
+/* ─── Message item (content-visibility for long lists) ─── */
+.message-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 80px;
+}
+
+/* ─── Message entrance animation ─── */
+@keyframes msg-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg-appear {
+  animation: msg-fade-up 0.3s ease-out both;
+}
+
+/* ─── Smooth collapsible body for ThinkingSection ─── */
+.collapsible-body {
+  overflow: hidden;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Content fade-in when answer arrives after thinking ─── */
+@keyframes content-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.content-appear {
+  animation: content-fade 0.35s ease-out both;
+}
+
+/* ─── Subtle fluid / lava-lamp background (compositor-only) ─── */
+.fluid-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fluid-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  will-change: transform;
+}
+
+.fluid-bg--light .fluid-blob--a {
+  width: min(58vw, 540px);
+  height: min(58vw, 540px);
+  top: -12%;
+  right: -8%;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.12), rgba(167, 139, 250, 0.08));
+  animation: fluid-wander-a 28s ease-in-out infinite;
+}
+
+.fluid-bg--light .fluid-blob--b {
+  width: min(50vw, 480px);
+  height: min(50vw, 480px);
+  bottom: -15%;
+  left: -10%;
+  background: linear-gradient(145deg, rgba(125, 211, 252, 0.1), rgba(196, 181, 253, 0.06));
+  animation: fluid-wander-b 32s ease-in-out infinite;
+}
+
+.fluid-bg--light .fluid-blob--c {
+  width: min(42vw, 400px);
+  height: min(42vw, 400px);
+  top: 38%;
+  left: 25%;
+  background: linear-gradient(160deg, rgba(226, 232, 240, 0.12), rgba(165, 180, 252, 0.06));
+  animation: fluid-wander-c 24s ease-in-out infinite;
+}
+
+.fluid-bg--light .fluid-blob--d {
+  width: min(36vw, 340px);
+  height: min(36vw, 340px);
+  bottom: 22%;
+  right: 8%;
+  background: linear-gradient(120deg, rgba(186, 230, 253, 0.1), rgba(199, 210, 254, 0.06));
+  animation: fluid-wander-d 26s ease-in-out infinite;
+}
+
+.fluid-bg--dark .fluid-blob--a {
+  width: min(55vw, 500px);
+  height: min(55vw, 500px);
+  top: -10%;
+  right: -5%;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.22), rgba(109, 40, 217, 0.12));
+  animation: fluid-wander-a 28s ease-in-out infinite;
+}
+
+.fluid-bg--dark .fluid-blob--b {
+  width: min(48vw, 440px);
+  height: min(48vw, 440px);
+  bottom: -12%;
+  left: -8%;
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.12));
+  animation: fluid-wander-b 32s ease-in-out infinite;
+}
+
+.fluid-bg--dark .fluid-blob--c {
+  width: min(40vw, 380px);
+  height: min(40vw, 380px);
+  top: 40%;
+  left: 20%;
+  background: linear-gradient(160deg, rgba(147, 51, 234, 0.12), rgba(79, 70, 229, 0.1));
+  animation: fluid-wander-c 24s ease-in-out infinite;
+}
+
+.fluid-bg--dark .fluid-blob--d {
+  width: min(34vw, 320px);
+  height: min(34vw, 320px);
+  bottom: 18%;
+  right: 5%;
+  background: linear-gradient(120deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.1));
+  animation: fluid-wander-d 26s ease-in-out infinite;
+}
+
+@keyframes fluid-wander-a {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(-4%, 6%) scale(1.06); }
+  50%      { transform: translate(5%, -3%) scale(0.94); }
+  75%      { transform: translate(-2%, -5%) scale(1.03); }
+}
+
+@keyframes fluid-wander-b {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(6%, -4%) scale(1.05); }
+  66%      { transform: translate(-5%, 5%) scale(0.96); }
+}
+
+@keyframes fluid-wander-c {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  40%      { transform: translate(8%, 4%) scale(1.08); }
+  80%      { transform: translate(-6%, -6%) scale(0.9); }
+}
+
+@keyframes fluid-wander-d {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30%      { transform: translate(-5%, 7%) scale(1.04); }
+  60%      { transform: translate(4%, -4%) scale(0.95); }
+}
+
+/* ─── Focus-visible ring for interactive elements ─── */
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ─── Mobile sidebar slide-in ─── */
+@keyframes sidebar-slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sidebar-enter {
+  animation: sidebar-slide-in 0.2s ease-out both;
+}
+
+/* ─── Global reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
