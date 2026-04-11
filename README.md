@@ -4,6 +4,8 @@ A natural language interface for querying US Census data, powered by Anthropic C
 
 **Live app** &rarr; https://censusai.up.railway.app/
 
+https://github.com/user-attachments/assets/158eae7b-949a-4ffe-b8c3-6ebb8a23f831
+
 ## Overview
 
 Ask questions about US population data in plain English. The agent translates natural language into SQL, executes it against Snowflake's US Open Census dataset, and returns interpreted results — all through a conversational chat interface.
