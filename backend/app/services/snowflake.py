@@ -100,7 +100,13 @@ class SnowflakeService:
         try:
             if conn.is_closed():
                 conn = self._create_connection()
+            else:
+                conn.cursor().execute("SELECT 1").close()
         except Exception:
+            try:
+                conn.close()
+            except Exception:
+                pass
             conn = self._create_connection()
         return conn
 
